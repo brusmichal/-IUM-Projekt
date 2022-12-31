@@ -218,6 +218,12 @@ def analyze_track_storage():
 
     print("-- track_storage.jsonl")
 
+    sums = {"fast": 0, "medium": 0, "slow": 0}
+    for storage in track_storages:
+        sums[storage["storage_class"]] += 1
+
+    print(sums)
+
 
 def analyze_track_costs():
 
