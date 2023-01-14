@@ -70,7 +70,4 @@ class TrackAssignment(TypedDict):
     storage_class: Literal["slow", "medium", "fast"]
     daily_cost: float
     avg_delay: float
-
-
-class TrackForSolution(Track):
     avg_delay_contribution: float
