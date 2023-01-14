@@ -1,7 +1,7 @@
 import json
-
 from pathlib import Path
 from random import randint
+
 
 def main():
     analyze_sessions()
@@ -11,26 +11,30 @@ def main():
 
 
 def analyze_sessions():
-    input = Path("sessions.jsonl").read_text().splitlines()
+    input = Path("IUM22Z_Zad_02_01_v2/sessions.jsonl").read_text().splitlines()
     sessions = []
     for line in input:
         session = json.loads(line)
         sessions.append(session)
 
     print("-- sessions.jsonl")
-    
+
+    # number of session events
+    print(f"Ilość wydarzeń w sesjach: {len(sessions)}")
+
     # null userid
     userid_nones = 0
     for session in sessions:
         if session.get("user_id") is None:
             userid_nones += 1
     print(f"Ilość nulli w userid: {userid_nones}")
-    
+
     # types
-    types = set()
-    for session in sessions:
-        types.add(session.get("event_type"))
-    print(f"Typy eventów w sesjach: {types}")
+    types = {x["event_type"] for x in sessions}
+    types_count = {x: 0 for x in types}
+    for event in sessions:
+        types_count[event["event_type"]] += 1
+    print(f"Typy eventów w sesjach: {types_count}")
 
     # null type
     timestamps_nones = 0
@@ -50,14 +54,17 @@ def analyze_sessions():
 
 
 def analyze_tracks():
-    input = Path("tracks.jsonl").read_text().splitlines()
+    input = Path("IUM22Z_Zad_02_01_v2/tracks.jsonl").read_text().splitlines()
     tracks = []
     for line in input:
         track = json.loads(line)
         tracks.append(track)
 
     print("-- tracks.jsonl")
-    
+
+    # number of tracks
+    print(f"Ilość utworów: {len(tracks)}")
+
     # null id
     id_nones = 0
     for track in tracks:
@@ -210,7 +217,7 @@ def analyze_tracks():
 
 
 def analyze_track_storage():
-    input = Path("track_storage.jsonl").read_text().splitlines()
+    input = Path("IUM22Z_Zad_02_01_v2/track_storage.jsonl").read_text().splitlines()
     track_storages = []
     for line in input:
         storage = json.loads(line)
@@ -227,47 +234,49 @@ def analyze_track_storage():
 
 def analyze_track_costs():
 
-    input = Path("tracks.jsonl").read_text().splitlines()
+    input = Path("IUM22Z_Zad_02_01_v2/tracks.jsonl").read_text().splitlines()
     tracks = []
     for line in input:
         track = json.loads(line)
         tracks.append(track)
 
-    input = Path("track_storage.jsonl").read_text().splitlines()
+    input = Path("IUM22Z_Zad_02_01_v2/track_storage.jsonl").read_text().splitlines()
     track_storages = []
     for line in input:
         storage = json.loads(line)
         track_storages.append(storage)
-    track_storage_by_id = { x["track_id"]: x for x in track_storages }
+    track_storage_by_id = {x["track_id"]: x for x in track_storages}
 
     print("-- track costs")
 
-    cost_instances = {
-        "slow": [],
-        "medium": [],
-        "fast": [],
-    }
+    cost_instances = {"slow": [], "medium": [], "fast": []}
     for track in tracks:
         id = track.get("id")
         dur = track.get("duration_ms")
-        if id is None: continue
-        if dur is None: continue
+        if id is None:
+            continue
+        if dur is None:
+            continue
         storage = track_storage_by_id.get(id)
-        if storage is None: continue
+        if storage is None:
+            continue
         sclass = storage.get("storage_class")
         cost = storage.get("daily_cost")
-        if sclass != "slow" and sclass != "medium" and sclass != "fast": continue
-        if cost is None: continue
-        cost_instances[sclass].append({
-            "cost": cost,
-            "dur": dur,
-        })
-    
+        if sclass != "slow" and sclass != "medium" and sclass != "fast":
+            continue
+        if cost is None:
+            continue
+        cost_instances[sclass].append({"cost": cost, "dur": dur})
+
     for sclass in cost_instances.keys():
         print(f"{sclass} raw")
-        avg = sum([x["cost"]for x in cost_instances[sclass]]) / len(cost_instances[sclass])
+        avg = sum([x["cost"] for x in cost_instances[sclass]]) / len(
+            cost_instances[sclass]
+        )
         print(f"avg: {avg}")
-        sd = sum([((x["cost"] - avg) ** 2) for x in cost_instances[sclass]]) / len(cost_instances[sclass])
+        sd = sum([((x["cost"] - avg) ** 2) for x in cost_instances[sclass]]) / len(
+            cost_instances[sclass]
+        )
         print(f"sd: {sd}")
 
 
