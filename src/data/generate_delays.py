@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from models import SessionEvent, Track, TrackDelay
+from data_models import SessionEvent, Track, TrackDelay
 from utils import unwrap
 
 
@@ -28,25 +28,27 @@ def load_tracks(data_path: Path) -> list[Track]:
 
 
 def calculate_track_delays(
-    sessions: dict[int, list[SessionEvent]],
-    tracks: list[Track]
+    sessions: dict[int, list[SessionEvent]], tracks: list[Track]
 ) -> list[TrackDelay]:
-    tracks_by_id = { x["id"]: x for x in tracks }
-    track_ids = set().union(
-        *[
-            {
-                unwrap(e.get("track_id"))
-                for e in event_list
-                if e.get("track_id") is not None
-            }
-            for event_list in sessions.values()
-        ]
-    ) | tracks_by_id.keys()
+    tracks_by_id = {x["id"]: x for x in tracks}
+    track_ids = (
+        set().union(
+            *[
+                {
+                    unwrap(e.get("track_id"))
+                    for e in event_list
+                    if e.get("track_id") is not None
+                }
+                for event_list in sessions.values()
+            ]
+        )
+        | tracks_by_id.keys()
+    )
     track_delays_lists = {id: [] for id in track_ids}
     for event_list in sessions.values():
         relevant_events = sorted(
             [e for e in event_list if e["event_type"] in {"play", "skip"}],
-            key = lambda x: datetime.fromisoformat(x["timestamp"]),
+            key=lambda x: datetime.fromisoformat(x["timestamp"]),
         )
         for i in range(len(relevant_events) - 1):
             event = relevant_events[i]
@@ -64,11 +66,7 @@ def calculate_track_delays(
                 delay_ms = (next_datetime - event_datetime).total_seconds() * 1000
                 track_delays_lists[next.get("track_id")].append(delay_ms)
     return [
-        TrackDelay(
-            track_id=id,
-            avg_delay=sum(delays) / len(delays),
-            delays=delays,
-        )
+        TrackDelay(track_id=id, avg_delay=sum(delays) / len(delays), delays=delays)
         for id, delays in track_delays_lists.items()
         if len(delays) > 0
     ]
@@ -76,6 +74,6 @@ def calculate_track_delays(
 
 def save_track_delays(track_delays: list[TrackDelay], data_path: Path):
     with open(data_path, "w") as out:
-        for delay in track_delays:
+        for delay in sorted(track_delays, key=lambda x: x["track_id"]):
             out.write(json.dumps(delay))
             out.write("\n")

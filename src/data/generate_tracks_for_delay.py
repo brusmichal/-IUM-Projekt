@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from data.generate_delays import load_tracks
-from models import Track, TrackDelay, TrackForDelay, TrackStorage
+from data_models import Track, TrackDelay, TrackForDelay, TrackStorage
 
 
 def generate_tracks_for_delay():
@@ -63,6 +63,6 @@ def make_track_for_delay(
 
 def save_tracks_for_delay(tracks_for_delay: list[TrackForDelay], data_path: Path):
     with open(data_path, "w") as out:
-        for track in tracks_for_delay:
+        for track in sorted(tracks_for_delay, key=lambda x: x["id"]):
             out.write(json.dumps(track))
             out.write("\n")
