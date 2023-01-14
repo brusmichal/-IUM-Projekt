@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-from data_models import TrackAssignment
+from datamodels.models import TrackAssignment
 
 
 class Solver:
@@ -36,7 +36,7 @@ class Solver:
             actions.extend(self._make_actions_for_track(track_id))
         actions.sort(key=lambda x: x.delay_per_cost, reverse=True)
 
-        while delay_to_reduce > 0 and len(actions) > 0:
+        while len(actions) > 0 and (actions[-1].cost_diff == 0 or delay_to_reduce > 0):
             action = actions.pop()
             if assignments[action.track_id]["storage_class"] == action.move_from:
                 assignments[action.track_id] = self.options[action.track_id][
@@ -60,7 +60,9 @@ class Solver:
                 move_to=y,
                 delay_diff=delay_diff(x, y),
                 cost_diff=cost_diff(x, y),
-                delay_per_cost=delay_diff(x, y) / cost_diff(x, y),
+                delay_per_cost=delay_diff(x, y) / cost_diff(x, y)
+                if cost_diff(x, y) != 0
+                else delay_diff(x, y) * float("inf"),
             )
             for x, y in [("slow", "medium"), ("slow", "fast"), ("medium", "fast")]
         ]

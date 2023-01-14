@@ -5,7 +5,7 @@ from data.generate_tracks_for_delay import generate_tracks_for_delay
 from data.generate_tracks_for_storage import generate_tracks_for_storage
 
 
-def main():
+def generate_data():
     generate_delays()
     generate_tracks_for_delay()
     generate_tracks_for_storage()
@@ -14,4 +14,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    generate_data()

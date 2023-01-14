@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Literal, Protocol
 
-from data_models import Track, TrackForStorage
+from datamodels.models import Track, TrackForStorage
 
 
 class DailyCostPredictor(Protocol):

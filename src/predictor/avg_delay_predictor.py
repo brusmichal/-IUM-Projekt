@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Literal
 
-from data_models import TrackForDelay
+from datamodels.models import TrackForDelay
 
 
 class AvgDelayPredictor:

@@ -72,3 +72,8 @@ class TrackAssignment(TypedDict):
     daily_cost: float
     avg_delay: float
     fraction_of_all_plays: float
+
+
+class ServiceOutputAB(TypedDict):
+    simple: ServiceOutput
+    main: ServiceOutput

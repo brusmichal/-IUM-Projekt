@@ -3,7 +3,7 @@ from pathlib import Path
 from random import randint
 
 
-def main():
+def analyze_provided_data():
     analyze_sessions()
     analyze_tracks()
     analyze_track_storage()
@@ -49,6 +49,13 @@ def analyze_sessions():
         if session.get("timestamp") is None:
             timestamps_nones += 1
     print(f"Ilość nulli w timestampach: {timestamps_nones}")
+
+    # track_ids in sessions
+    track_ids = set()
+    for event in sessions:
+        if event["event_type"] == "play":
+            track_ids.add(event["track_id"])
+    print(f"Ilość różnych track_id w sesjach: {len(track_ids)}")
 
     print()
 
@@ -281,4 +288,4 @@ def analyze_track_costs():
 
 
 if __name__ == "__main__":
-    main()
+    analyze_provided_data()

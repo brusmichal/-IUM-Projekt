@@ -2,23 +2,30 @@ import json
 from pathlib import Path
 
 from data.generate_delays import load_tracks
-from data_models import Track, TrackDelay, TrackForDelay, TrackStorage
+from datamodels.models import Track, TrackDelay, TrackForDelay, TrackStorage
 
 
 def generate_tracks_for_delay():
-    delays = load_track_delays(Path("data/track_delays.jsonl"))
-    tracks = load_tracks(Path("IUM22Z_Zad_02_01_v2/tracks.jsonl"))
-    track_storage = load_track_storage(Path("IUM22Z_Zad_02_01_v2/track_storage.jsonl"))
+    delays = load_track_delays()
+    tracks = load_tracks()
+    track_storage = load_track_storage()
     tracks_for_delay = make_tracks_for_delay(tracks, track_storage, delays)
-    save_tracks_for_delay(tracks_for_delay, Path("data/tracks_for_delay.jsonl"))
+    save_tracks_for_delay(tracks_for_delay)
 
 
-def load_track_delays(data_path: Path) -> list[TrackDelay]:
-    return [json.loads(x) for x in data_path.read_text().splitlines()]
+def load_track_delays() -> list[TrackDelay]:
+    return [
+        json.loads(x) for x in Path("data/track_delays.jsonl").read_text().splitlines()
+    ]
 
 
-def load_track_storage(data_path: Path) -> list[TrackStorage]:
-    return [json.loads(x) for x in data_path.read_text().splitlines()]
+def load_track_storage() -> list[TrackStorage]:
+    return [
+        json.loads(x)
+        for x in Path("IUM22Z_Zad_02_01_v2/track_storage.jsonl")
+        .read_text()
+        .splitlines()
+    ]
 
 
 def make_tracks_for_delay(
@@ -61,8 +68,8 @@ def make_track_for_delay(
     }
 
 
-def save_tracks_for_delay(tracks_for_delay: list[TrackForDelay], data_path: Path):
-    with open(data_path, "w") as out:
+def save_tracks_for_delay(tracks_for_delay: list[TrackForDelay]):
+    with open(Path("data/tracks_for_delay.jsonl"), "w") as out:
         for track in sorted(tracks_for_delay, key=lambda x: x["id"]):
             out.write(json.dumps(track))
             out.write("\n")

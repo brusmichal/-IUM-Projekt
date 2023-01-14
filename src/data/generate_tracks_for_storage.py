@@ -3,14 +3,14 @@ from pathlib import Path
 
 from data.generate_delays import load_tracks
 from data.generate_tracks_for_delay import load_track_storage
-from data_models import Track, TrackForStorage, TrackStorage
+from datamodels.models import Track, TrackForStorage, TrackStorage
 
 
 def generate_tracks_for_storage():
-    tracks = load_tracks(Path("IUM22Z_Zad_02_01_v2/tracks.jsonl"))
-    track_storage = load_track_storage(Path("IUM22Z_Zad_02_01_v2/track_storage.jsonl"))
+    tracks = load_tracks()
+    track_storage = load_track_storage()
     tracks_for_storage = make_tracks_for_storage(tracks, track_storage)
-    save_tracks_for_storage(tracks_for_storage, Path("data/tracks_for_storage.jsonl"))
+    save_tracks_for_storage(tracks_for_storage)
 
 
 def make_tracks_for_storage(
@@ -48,8 +48,8 @@ def make_track_for_storage(track: Track, storage: TrackStorage) -> TrackForStora
     }
 
 
-def save_tracks_for_storage(tracks_for_storage: list[TrackForStorage], data_path: Path):
-    with open(data_path, "w") as out:
+def save_tracks_for_storage(tracks_for_storage: list[TrackForStorage]):
+    with open(Path("data/tracks_for_storage.jsonl"), "w") as out:
         for track in sorted(tracks_for_storage, key=lambda x: x["id"]):
             out.write(json.dumps(track))
             out.write("\n")

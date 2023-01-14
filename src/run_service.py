@@ -1,4 +1,4 @@
-from service.service import run
+from service.service import run_service
 
 if __name__ == "__main__":
-    run()
+    run_service(8888)

@@ -2,19 +2,19 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from data_models import SessionEvent, Track, TrackDelay
-from utils import unwrap
+from datamodels.models import SessionEvent, Track, TrackDelay
+from utils.utils import unwrap
 
 
 def generate_delays():
-    sessions = load_sessions(Path("IUM22Z_Zad_02_01_v2/sessions.jsonl"))
-    tracks = load_tracks(Path("IUM22Z_Zad_02_01_v2/tracks.jsonl"))
+    sessions = load_sessions()
+    tracks = load_tracks()
     track_delays = calculate_track_delays(sessions, tracks)
-    save_track_delays(track_delays, Path("data/track_delays.jsonl"))
+    save_track_delays(track_delays)
 
 
-def load_sessions(data_path: Path) -> dict[int, list[SessionEvent]]:
-    events_json = data_path.read_text().splitlines()
+def load_sessions() -> dict[int, list[SessionEvent]]:
+    events_json = Path("IUM22Z_Zad_02_01_v2/sessions.jsonl").read_text().splitlines()
     events: list[SessionEvent] = [json.loads(x) for x in events_json]
     session_ids = {x["session_id"] for x in events}
     sessions = {id: [] for id in session_ids}
@@ -23,8 +23,11 @@ def load_sessions(data_path: Path) -> dict[int, list[SessionEvent]]:
     return sessions
 
 
-def load_tracks(data_path: Path) -> list[Track]:
-    return [json.loads(x) for x in data_path.read_text().splitlines()]
+def load_tracks() -> list[Track]:
+    return [
+        json.loads(x)
+        for x in Path("IUM22Z_Zad_02_01_v2/tracks.jsonl").read_text().splitlines()
+    ]
 
 
 def calculate_track_delays(
@@ -72,8 +75,8 @@ def calculate_track_delays(
     ]
 
 
-def save_track_delays(track_delays: list[TrackDelay], data_path: Path):
-    with open(data_path, "w") as out:
+def save_track_delays(track_delays: list[TrackDelay]):
+    with open(Path("data/track_delays.jsonl"), "w") as out:
         for delay in sorted(track_delays, key=lambda x: x["track_id"]):
             out.write(json.dumps(delay))
             out.write("\n")

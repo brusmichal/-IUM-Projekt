@@ -1,9 +1,9 @@
 from typing import Literal
 
-from data_models import ServiceInput, ServiceOutput, Track, TrackAssignment
+from datamodels.models import ServiceInput, ServiceOutput, Track, TrackAssignment
 from predictor.avg_delay_predictor import AvgDelayPredictor
 from predictor.daily_cost_predictor import DailyCostPredictor
-from service.solver import Solver
+from solution.solver import Solver
 
 
 def find_solution(
