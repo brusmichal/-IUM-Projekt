@@ -27,7 +27,6 @@ class AvgDelayPredictor:
             "medium": sum(delays_medium) / len(delays_medium),
             "fast": sum(delays_fast) / len(delays_fast),
         }
-        print(self.averages)
 
     def predict_avg_delay(
         self, storage_class: Literal["slow", "medium", "fast"]

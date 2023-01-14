@@ -57,6 +57,7 @@ class TrackDelay(TypedDict):
 
 class ServiceInput(TypedDict):
     tracks: list[Track]
+    avg_delay_constraint: float
 
 
 class ServiceOutput(TypedDict):
@@ -70,4 +71,4 @@ class TrackAssignment(TypedDict):
     storage_class: Literal["slow", "medium", "fast"]
     daily_cost: float
     avg_delay: float
-    avg_delay_contribution: float
+    fraction_of_all_plays: float
