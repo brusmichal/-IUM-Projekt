@@ -28,14 +28,12 @@ def run_client():
     current_solution = get_current_solution()
     Path("data/solution_current.json").write_text(json.dumps(current_solution))
     input = get_input(current_solution)
-    solution_simple = client.get_solution("simple", input)
-    Path("data/solution_simple.json").write_text(json.dumps(solution_simple))
+    solution_avg = client.get_solution("avg", input)
+    Path("data/solution_avg.json").write_text(json.dumps(solution_avg))
     solution_linear = client.get_solution("linear", input)
     Path("data/solution_linear.json").write_text(json.dumps(solution_linear))
-    solution_main = client.get_solution("ml", input)
-    Path("data/solution_ml.json").write_text(json.dumps(solution_main))
-    solution_ab = client.get_solution_ab("linear", "ml", input)
-    Path("data/solution_ab_linear_ml.json").write_text(json.dumps(solution_ab))
+    solution_ab = client.get_solution_ab("avg", "linear", input)
+    Path("data/solution_ab_avg_linear.json").write_text(json.dumps(solution_ab))
 
 
 def get_input(current_solution: ServiceOutput) -> ServiceInput:

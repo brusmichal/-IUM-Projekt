@@ -12,7 +12,7 @@ class DailyCostPredictor(Protocol):
         ...
 
 
-class DailyCostPredictorSimple:
+class DailyCostPredictorAvg:
     averages: dict[Literal["slow", "medium", "fast"], float]
 
     def __init__(self):
@@ -80,11 +80,3 @@ class DailyCostPredictorLinearByDuration:
         self, track: Track, storage_class: Literal["slow", "medium", "fast"]
     ) -> float:
         return self.average_per_duration[storage_class] * track["duration_ms"]
-
-
-class DailyCostPredictorML:
-    def predict_daily_cost(
-        self, track: Track, storage_class: Literal["slow", "medium", "fast"]
-    ) -> float:
-        # TODO
-        return 0

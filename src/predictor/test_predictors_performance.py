@@ -6,8 +6,7 @@ from predictor.avg_delay_predictor import AvgDelayPredictor
 from predictor.daily_cost_predictor import (
     DailyCostPredictor,
     DailyCostPredictorLinearByDuration,
-    DailyCostPredictorML,
-    DailyCostPredictorSimple,
+    DailyCostPredictorAvg,
 )
 
 
@@ -22,11 +21,10 @@ def test_predictors():
         json.loads(x)
         for x in Path("data/tracks_for_storage_validate.jsonl").read_text().splitlines()
     ]
-    test_daily_cost_predictor(DailyCostPredictorSimple(), storage_validation_data)
+    test_daily_cost_predictor(DailyCostPredictorAvg(), storage_validation_data)
     test_daily_cost_predictor(
         DailyCostPredictorLinearByDuration(), storage_validation_data
     )
-    test_daily_cost_predictor(DailyCostPredictorML(), storage_validation_data)
 
 
 def test_avg_delay_predictor(

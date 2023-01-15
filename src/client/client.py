@@ -14,7 +14,7 @@ class Client:
         self.port = port
 
     def get_solution(
-        self, endpoint: Literal["ml", "simple", "linear"], input: ServiceInput
+        self, endpoint: Literal["avg", "linear"], input: ServiceInput
     ) -> ServiceOutput:
         url = f"http://{self.host}:{self.port}/{endpoint}"
         headers = {"Content-Type": "application/json; charset=utf-8"}
@@ -23,8 +23,8 @@ class Client:
 
     def get_solution_ab(
         self,
-        a_method: Literal["ml", "simple", "linear"],
-        b_method: Literal["ml", "simple", "linear"],
+        a_method: Literal["avg", "linear"],
+        b_method: Literal["avg", "linear"],
         input: ServiceInput,
     ) -> ServiceOutputAB:
         url = f"http://{self.host}:{self.port}/ab"

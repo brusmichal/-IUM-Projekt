@@ -13,8 +13,7 @@ from predictor.avg_delay_predictor import AvgDelayPredictor
 from predictor.daily_cost_predictor import (
     DailyCostPredictor,
     DailyCostPredictorLinearByDuration,
-    DailyCostPredictorML,
-    DailyCostPredictorSimple,
+    DailyCostPredictorAvg,
 )
 from solution.find_solution import find_solution
 
@@ -22,9 +21,8 @@ from solution.find_solution import find_solution
 async def run_async_service(port: int):
     app = Application(
         [
-            (r"/simple", SimpleSolutionHandler),
+            (r"/avg", AvgSolutionHandler),
             (r"/linear", LinearByDurationSolutionHandler),
-            (r"/ml", MainSolutionHandler),
             (r"/ab", ABSolutionHandler),
         ]
     )
@@ -54,9 +52,9 @@ class SolutionHandler(RequestHandler):
             raise HTTPError(500)
 
 
-class SimpleSolutionHandler(SolutionHandler):
+class AvgSolutionHandler(SolutionHandler):
     avg_delay_predictor = AvgDelayPredictor()
-    daily_cost_predictor = DailyCostPredictorSimple()
+    daily_cost_predictor = DailyCostPredictorAvg()
 
 
 class LinearByDurationSolutionHandler(SolutionHandler):
@@ -64,26 +62,16 @@ class LinearByDurationSolutionHandler(SolutionHandler):
     daily_cost_predictor = DailyCostPredictorLinearByDuration()
 
 
-class MainSolutionHandler(SolutionHandler):
-    avg_delay_predictor = AvgDelayPredictor()
-    daily_cost_predictor = DailyCostPredictorML()
-
-
 class ABSolutionHandler(RequestHandler):
     avg_delay_predictor = AvgDelayPredictor()
-    daily_cost_predictor_simple = DailyCostPredictorSimple()
+    daily_cost_predictor_simple = DailyCostPredictorAvg()
     daily_cost_predictor_linear = DailyCostPredictorLinearByDuration()
-    daily_cost_predictor_ml = DailyCostPredictorML()
 
     def post(self):
         try:
             a: str = self.request.headers.get("a-method")  # type: ignore
             b: str = self.request.headers.get("b-method")  # type: ignore
-            if a not in {"simple", "linear", "ml"} or b not in {
-                "simple",
-                "linear",
-                "ml",
-            }:
+            if a not in {"avg", "linear"} or b not in {"avg", "linear"}:
                 raise HTTPError(404)
             service_input: ServiceInput = json_decode(self.request.body)
             tracks_size = len(service_input["tracks"])
@@ -112,18 +100,16 @@ class ABSolutionHandler(RequestHandler):
                 input_a,
                 self.avg_delay_predictor,
                 {
-                    "simple": self.daily_cost_predictor_simple,
+                    "avg": self.daily_cost_predictor_simple,
                     "linear": self.daily_cost_predictor_linear,
-                    "ml": self.daily_cost_predictor_ml,
                 }[a],
             )
             solution_b = find_solution(
                 input_b,
                 self.avg_delay_predictor,
                 {
-                    "simple": self.daily_cost_predictor_simple,
+                    "avg": self.daily_cost_predictor_simple,
                     "linear": self.daily_cost_predictor_linear,
-                    "ml": self.daily_cost_predictor_ml,
                 }[b],
             )
             solution: ServiceOutputAB = {"a": solution_a, "b": solution_b}
