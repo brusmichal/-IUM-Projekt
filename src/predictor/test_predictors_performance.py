@@ -35,7 +35,7 @@ def test_avg_delay_predictor(
     for track in validation_data:
         guess = predictor.predict_avg_delay(track["storage_class"])
         actual = track["avg_delay"]
-        rel_diff = (guess - actual) / actual
+        rel_diff = abs(guess - actual) / actual
         rel_diffs.append(rel_diff)
     avg_rel_diff = sum(rel_diffs) / len(rel_diffs)
     print(f"average relative difference: {avg_rel_diff}")
@@ -50,7 +50,7 @@ def test_daily_cost_predictor(
     for track in validation_data:
         guess = predictor.predict_daily_cost(track, track["storage_class"])
         actual = track["daily_cost"]
-        rel_diff = (guess - actual) / actual
+        rel_diff = abs(guess - actual) / actual
         rel_diffs.append(rel_diff)
     avg_rel_diff = sum(rel_diffs) / len(rel_diffs)
     print(f"average relative difference: {avg_rel_diff}")
