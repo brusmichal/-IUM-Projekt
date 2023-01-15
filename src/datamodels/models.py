@@ -75,5 +75,5 @@ class TrackAssignment(TypedDict):
 
 
 class ServiceOutputAB(TypedDict):
-    simple: ServiceOutput
-    main: ServiceOutput
+    a: ServiceOutput
+    b: ServiceOutput

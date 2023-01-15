@@ -1,5 +1,7 @@
 import json
+import random
 from pathlib import Path
+from typing import Literal
 
 from data.generate_delays import load_tracks
 from datamodels.models import Track, TrackDelay, TrackForDelay, TrackStorage
@@ -10,7 +12,8 @@ def generate_tracks_for_delay():
     tracks = load_tracks()
     track_storage = load_track_storage()
     tracks_for_delay = make_tracks_for_delay(tracks, track_storage, delays)
-    save_tracks_for_delay(tracks_for_delay)
+    divided_tracks_for_delay = divide_tracks_for_delay(tracks_for_delay)
+    save_tracks_for_delay(divided_tracks_for_delay)
 
 
 def load_track_delays() -> list[TrackDelay]:
@@ -68,8 +71,42 @@ def make_track_for_delay(
     }
 
 
-def save_tracks_for_delay(tracks_for_delay: list[TrackForDelay]):
-    with open(Path("data/tracks_for_delay.jsonl"), "w") as out:
-        for track in sorted(tracks_for_delay, key=lambda x: x["id"]):
+def divide_tracks_for_delay(
+    tracks_for_storage: list[TrackForDelay],
+) -> dict[Literal["train", "validate"], list[TrackForDelay]]:
+    tracks_slow = {x["id"] for x in tracks_for_storage if x["storage_class"] == "slow"}
+    tracks_medium = {
+        x["id"] for x in tracks_for_storage if x["storage_class"] == "medium"
+    }
+    tracks_fast = {x["id"] for x in tracks_for_storage if x["storage_class"] == "fast"}
+    frac_validate = 0.2
+    num_validate_slow = int(len(tracks_slow) * frac_validate)
+    num_validate_medium = int(len(tracks_medium) * frac_validate)
+    num_validate_fast = int(len(tracks_fast) * frac_validate)
+    tracks_validate_slow = random.sample(tracks_slow, num_validate_slow)
+    tracks_validate_medium = random.sample(tracks_medium, num_validate_medium)
+    tracks_validate_fast = random.sample(tracks_fast, num_validate_fast)
+    tracks_train_slow = tracks_slow.difference(tracks_validate_slow)
+    tracks_train_medium = tracks_medium.difference(tracks_validate_medium)
+    tracks_train_fast = tracks_fast.difference(tracks_validate_fast)
+    tracks_train = tracks_train_fast.union(tracks_train_medium).union(tracks_train_slow)
+    tracks_validate = set(
+        tracks_validate_fast + tracks_validate_medium + tracks_validate_slow
+    )
+    return {
+        "train": [x for x in tracks_for_storage if x["id"] in tracks_train],
+        "validate": [x for x in tracks_for_storage if x["id"] in tracks_validate],
+    }
+
+
+def save_tracks_for_delay(
+    tracks_for_delay: dict[Literal["train", "validate"], list[TrackForDelay]]
+):
+    with open(Path("data/tracks_for_delay_train.jsonl"), "w") as out:
+        for track in sorted(tracks_for_delay["train"], key=lambda x: x["id"]):
+            out.write(json.dumps(track))
+            out.write("\n")
+    with open(Path("data/tracks_for_delay_validate.jsonl"), "w") as out:
+        for track in sorted(tracks_for_delay["validate"], key=lambda x: x["id"]):
             out.write(json.dumps(track))
             out.write("\n")

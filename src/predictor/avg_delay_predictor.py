@@ -11,7 +11,7 @@ class AvgDelayPredictor:
     def __init__(self):
         tracks_for_delay: list[TrackForDelay] = [
             json.loads(x)
-            for x in Path("data/tracks_for_delay.jsonl").read_text().splitlines()
+            for x in Path("data/tracks_for_delay_train.jsonl").read_text().splitlines()
         ]
         delays_slow = [
             x["avg_delay"] for x in tracks_for_delay if x["storage_class"] == "slow"

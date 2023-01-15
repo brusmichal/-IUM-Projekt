@@ -12,6 +12,7 @@ def analyze_solutions():
     print(f"avg_delay: {current_solution['avg_delay']}")
     print(f"daily_cost: {current_solution['daily_cost']}")
     print()
+
     simple_solution: ServiceOutput = json.loads(
         Path("data/solution_simple.json").read_text()
     )
@@ -19,12 +20,19 @@ def analyze_solutions():
     print(f"avg_delay: {simple_solution['avg_delay']}")
     print(f"daily_cost: {simple_solution['daily_cost']}")
     print()
-    main_solution: ServiceOutput = json.loads(
-        Path("data/solution_main.json").read_text()
+
+    linear_solution: ServiceOutput = json.loads(
+        Path("data/solution_linear.json").read_text()
     )
-    print("main")
-    print(f"avg_delay: {main_solution['avg_delay']}")
-    print(f"daily_cost: {main_solution['daily_cost']}")
+    print("linear")
+    print(f"avg_delay: {linear_solution['avg_delay']}")
+    print(f"daily_cost: {linear_solution['daily_cost']}")
+    print()
+
+    ml_solution: ServiceOutput = json.loads(Path("data/solution_ml.json").read_text())
+    print("ml")
+    print(f"avg_delay: {ml_solution['avg_delay']}")
+    print(f"daily_cost: {ml_solution['daily_cost']}")
 
 
 if __name__ == "__main__":
