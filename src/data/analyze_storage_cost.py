@@ -39,6 +39,10 @@ def describe_tracks_for_storage(df: pd.DataFrame, label: str):
 
 
 def analyze_storage_cost_pack(df: pd.DataFrame, label: str):
+    print(f"{label}: describe daily_cost")
+    print(df["daily_cost"].describe())
+    print()
+
     print(f"{label}: daily_cost pearson correlation")
     print(df.corrwith(df["daily_cost"], method="pearson", numeric_only=True))
     print()
